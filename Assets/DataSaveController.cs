@@ -18,14 +18,23 @@ public class DataSaveController : MonoBehaviour
         return result;
     }
 
-    public void WriteFile(string jsonString, string fileName)
+    public bool WriteFile(string jsonString, string fileName, ref string path)
     {
-        saveFile = Application.persistentDataPath + "/" + AddExtension(fileName);
-        File.WriteAllText(saveFile, jsonString);
+        try
+        {
+            saveFile = Application.persistentDataPath + "/" + AddExtension(fileName);
+            path = saveFile;
+            File.WriteAllText(saveFile, jsonString);
+            return true;
+        }catch(System.Exception e)
+        {
+            return false;
+        }
     }
 
     private string AddExtension(string filename)
     {
         return filename + ".txt";
     }
+
 }

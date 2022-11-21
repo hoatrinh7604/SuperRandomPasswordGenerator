@@ -101,6 +101,7 @@ public class Controller : MonoBehaviour
     private void OnSliderValueChanged()
     {
         passLength_Input.text = passLength_Slider.value.ToString();
+        if (passLength_Slider.value == 0) passLength_Input.text = "";
     }    
 
     private void OnInputDeselect()
@@ -133,6 +134,14 @@ public class Controller : MonoBehaviour
     {
         GenerateListCharacters();
         GenneratePass();
+        EnableFunctionButtons(true);
+    }
+
+    public void EnableFunctionButtons(bool isEnable)
+    {
+        hideButton.interactable = isEnable;
+        copyButton.interactable = isEnable;
+        saveButton.interactable = isEnable;
     }
 
     private void GenneratePass()
@@ -224,23 +233,36 @@ public class Controller : MonoBehaviour
         }
     }
 
+    [SerializeField] ToastController toastController;
     private void SaveToDisk()
     {
         SaveFileBtn.interactable = false;
         savePopup.SetActive(false);
-        saveController.WriteFile(passResult.text, fileName_Input.text);
+        string path = "";
+        var check = saveController.WriteFile(passResult.text, fileName_Input.text, ref path);
+
+        if (check)
+        {
+            toastController.SetText(path, 2.5f);
+        }
+        else
+        {
+            toastController.SetText("There is something error when save the file!", 1.5f);
+        }
+        toastController.Toast();
     }
 
     public void Clear()
     {
-        passLength_Input.text = "";
         passLength_Slider.value = 0;
         passLength_Slider.maxValue = 2048;
         passResult.text = "";
+        passLength_Input.text = "";
 
         calButton.interactable = false;
         SaveFileBtn.interactable = false;
         savePopup.SetActive(false);
+        EnableFunctionButtons(false);
     }
 
     public void Quit()
